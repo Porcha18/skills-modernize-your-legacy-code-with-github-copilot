@@ -78,3 +78,42 @@ If you want to modernize this legacy code further, possible next steps include:
 ---
 
 *Generated for the purposes of documenting the COBOL account management example.*
+
+## 🔁 Sequence Diagram (Mermaid)
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Main as MainProgram
+    participant Ops as Operations
+    participant Data as DataProgram
+
+    User->>Main: start program
+    loop menu
+        Main->>User: display menu + accept choice
+        User-->>Main: choose operation
+        Main->>Ops: CALL Operations (TOTAL/CREDIT/DEBIT)
+        Ops->>Data: CALL DataProgram (READ)
+        Data-->>Ops: return balance
+        alt CREDIT
+            Ops->>User: prompt amount
+            User-->>Ops: amount
+            Ops->>Data: CALL DataProgram (WRITE)
+            Data-->>Ops: ack
+            Ops-->>User: show new balance
+        else DEBIT
+            Ops->>User: prompt amount
+            User-->>Ops: amount
+            opt sufficient funds
+                Ops->>Data: CALL DataProgram (WRITE)
+                Data-->>Ops: ack
+                Ops-->>User: show new balance
+            else insufficient funds
+                Ops-->>User: show error
+            end
+        else TOTAL
+            Ops-->>User: show current balance
+        end
+    end
+    Main->>User: exit program
+```
